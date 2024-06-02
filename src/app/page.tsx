@@ -41,15 +41,15 @@ function Chart({ day }: { day: Day }) {
           gridTemplateColumns: ".01fr .01fr 1fr",
         }}
       >
-        {Object.entries(users).map(([color, users]) => (
+        {Object.entries(users).map(([color, users], i) => (
           <>
-            <div className="flex flex-col justify-center items-end">
+            <div key={i*3} className="flex flex-col justify-center items-end">
               <span className="">{a(day.names[color])}:</span>
             </div>
-            <div className="flex flex-col justify-center items-end px-1">
+            <div key={i*3+1}  className="flex flex-col justify-center items-end px-1">
                 {users.length}
             </div>
-            <div className="p-1 box-border">
+            <div  key={i*3+2}  className="p-1 box-border">
               <div
                 className="rounded-md overflow-visible px-2"
                 style={{
@@ -75,7 +75,7 @@ export default async function Home() {
       <div className="">
         {data.map((day, i) => {
           return (
-            <div>
+            <div key={i}>
               <div>
               Day: {i+1}
               </div>

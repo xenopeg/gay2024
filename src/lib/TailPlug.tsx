@@ -18,7 +18,7 @@ interface Tags {
 
 const proxy = (Tag: AnyComponent | string) => {
   return (strings: TemplateStringsArray, ...n: ((props: any) => string)[]) => {
-    return (props: any) => {
+    return function Cmp(props: any)  {
       let classes = "";
       for (let i = 0; i < strings.length; i++) {
         classes += strings[i];
