@@ -10,7 +10,8 @@
       "name": "Dev Server",
       "runtimeExecutable": "npm",
       "cwd": "${workspaceFolder}",
-      "runtimeArgs": ["run", "dev"]
+      "runtimeArgs": ["run", "dev"],
+      "resolveSourceMapLocations": ["${workspaceFolder}/", "!/node_modules/**"]
     }
   ]
 }

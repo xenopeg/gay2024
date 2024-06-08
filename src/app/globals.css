@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.tab-content {
+  display: none;
+}
+.tab-content:target {
+  display: block;
+}
