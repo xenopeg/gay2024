@@ -96,6 +96,7 @@ export default async function Home() {
       <div className="fixed top-0 left-0 w-screen bg-slate-700 p-1">
         {weeks.map((week, w) => (
           <a
+            key={w}
             className="text-white p-1 mr-2 rounded inline-block bg-slate-600"
             href={`#tab-${w}`}
           >
@@ -105,7 +106,7 @@ export default async function Home() {
       </div>
       {weeks.map((week, w) => {
         return (
-          <div className="tab-content overflow-auto" id={`tab-${w}`}>
+          <div key={w} className="tab-content overflow-auto" id={`tab-${w}`}>
             {week.map((day, i) => {
               return (
                 <div
