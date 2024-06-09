@@ -265,13 +265,14 @@ export default async function Home() {
         return (
           <div key={w} className="tab-content overflow-auto" id={`tab-${w}`}>
             <div className="fixed top-10 right-2 bg-white p-3 rounded">
-              {week.length === 7 && Averages({ week: week })?.map((a) => {
+              {week.length === 7 && Averages({ week: week })?.map((a,i) => {
                 return (
-                  <div>
+                  <div key={i}>
                     <span>{a.title}</span>
                     <div>
-                      {a.result.days.map((d) => (
+                      {a.result.days.map((d, j) => (
                         <div
+                          key={j}
                           className="w-7 h-7 inline-block"
                           style={{ background: `rgb(${d.join()})` }}
                         ></div>
