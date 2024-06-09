@@ -18,6 +18,163 @@ interface Day {
   };
 }
 
+interface AvgResult {
+  days: number[][];
+  week: number[];
+}
+
+function avg(fn: (colors: number[][]) => number[], colors: number[][][]) {
+  const days = colors.map((c) => fn(c));
+  const week = fn(days);
+
+  return { days, week };
+}
+
+function reefCode(colors: number[][]) {
+  const acc = [0, 0, 0];
+  for (let i = 0; i < colors.length; i++) {
+    const [r, g, b] = colors[i];
+    acc[0] += r;
+    acc[1] += g;
+    acc[2] += b;
+  }
+  const res = [
+    acc[0]%256,
+    acc[1]%256,
+    acc[2]%256,
+  ];
+  return res;
+}
+
+function topThree(colors: number[][]){
+  const cnt:{
+    [key:string]:number
+  } = {}
+  for(let color of colors){
+    const c = color.join();
+    if(!cnt[c]){
+      cnt[c] = 0
+    }
+    cnt[c]++;
+  }
+
+  const top3 = Object.entries(cnt).map(([_,v])=>v).sort().slice(0, 3);
+
+  let high:string[] = [];
+  for(let [k,v] of Object.entries(cnt)){
+    if(top3.indexOf(v) >= 0 ){
+      high.push(k);
+    }
+  }
+
+  return randomRedditCode(high.map(h => h.split(',').map(hh => +hh)));
+}
+
+function randomRedditCode(colors: number[][]) {
+  const acc = [0, 0, 0];
+  for (let i = 0; i < colors.length; i++) {
+    const [r, g, b] = colors[i];
+    acc[0] += Math.pow(r, 2.2);
+    acc[1] += Math.pow(g, 2.2);
+    acc[2] += Math.pow(b, 2.2);
+  }
+  const res = [
+    ~~Math.pow(acc[0] / colors.length, 1 / 2.2),
+    ~~Math.pow(acc[1] / colors.length, 1 / 2.2),
+    ~~Math.pow(acc[2] / colors.length, 1 / 2.2),
+  ];
+  return res;
+}
+
+function mode(colors: number[][]) {
+  const cnt:{
+    [key:string]:number
+  } = {}
+  for(let color of colors){
+    const c = color.join();
+    if(!cnt[c]){
+      cnt[c] = 0
+    }
+    cnt[c]++;
+  }
+  
+  let n=0;
+  let high:string[] = [];
+  for(let [k,v] of Object.entries(cnt)){
+    if(v > n){
+      n = v;
+      high = [k];
+    }else if(v === n){
+      high.push(k);
+    }
+  }
+
+  if(high.length === 1)
+    return high[0].split(',').map(h => +h);
+  return randomRedditCode(high.map(h => h.split(',').map(hh => +hh)));
+}
+
+function secondPlace(colors: number[][]) {
+  const cnt:{
+    [key:string]:number
+  } = {}
+  for(let color of colors){
+    const c = color.join();
+    if(!cnt[c]){
+      cnt[c] = 0
+    }
+    cnt[c]++;
+  }
+  
+  let m=0;
+  let high:string[] = [];
+  for(let [k,v] of Object.entries(cnt)){
+    if(v > m){
+      m = v;
+    }
+  }
+
+  let n=0;
+  for(let [k,v] of Object.entries(cnt)){
+    if(v === m){
+      continue;
+    }
+    if(v > n){
+      n = v;
+      high = [k];
+    }else if(v === n){
+      high.push(k);
+    }
+  }
+
+  if(high.length === 1)
+    return high[0].split(',').map(h => +h);
+  return randomRedditCode(high.map(h => h.split(',').map(hh => +hh)));
+}
+
+function Averages({ week }: { week: Day[] }) {
+  // get rgbs
+  const results = [];
+  const rgbsByDay = week.map((day) =>
+    Object.entries(day.users).flatMap(([k, v]) => v.map(() => day.colors[k]))
+  );
+  const md = avg(mode, rgbsByDay);
+  results.push({ title: "Winner", result: md });
+  const sd = avg(secondPlace, rgbsByDay);
+  results.push({ title: "Second place", result: sd });
+  const tt = avg(topThree, rgbsByDay);
+  results.push({ title: "Top 3", result: tt });
+  const rrc = avg(randomRedditCode, rgbsByDay);
+  results.push({ title: "Random reddit code", result: rrc });
+  const rbc = avg(reefCode, rgbsByDay);
+  results.push({ title: "Reef's mess (don't ask)", result: rbc });
+
+  // get day avgs
+
+  // get week avg
+  return results;
+}
+
 function Chart({ day, n }: { day: Day; n: number }) {
   const users = day.users;
   if (!users) {
@@ -107,6 +264,29 @@ export default async function Home() {
       {weeks.map((week, w) => {
         return (
           <div key={w} className="tab-content overflow-auto" id={`tab-${w}`}>
+            <div className="fixed top-10 right-2 bg-white p-3 rounded">
+              {week.length === 7 && Averages({ week: week })?.map((a) => {
+                return (
+                  <div>
+                    <span>{a.title}</span>
+                    <div>
+                      {a.result.days.map((d) => (
+                        <div
+                          className="w-7 h-7 inline-block"
+                          style={{ background: `rgb(${d.join()})` }}
+                        ></div>
+                      ))}
+                    </div>
+                    <div>
+                      <div
+                        className="w-48 h-7 inline-block"
+                        style={{ background: `rgb(${a.result.week.join()})` }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
             {week.map((day, i) => {
               return (
                 <div
